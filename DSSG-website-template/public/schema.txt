@@ -1,0 +1,38 @@
+CREATE TABLE Users (
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Prompts (
+    prompt_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    prompt_text TEXT NOT NULL
+);
+
+CREATE TABLE Responses (
+    response_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    prompt_id UUID REFERENCES Prompts(prompt_id),
+    response_text TEXT NOT NULL,
+    response_type VARCHAR(50) CHECK (response_type IN ('human', 'AI'))
+);
+
+CREATE TABLE Ratings (
+    rating_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES Users(user_id),
+    response_id UUID REFERENCES Responses(response_id),
+    criterion_1 INTEGER CHECK (criterion_1 BETWEEN 1 AND 4),
+    criterion_2 INTEGER CHECK (criterion_2 BETWEEN 1 AND 4),
+    criterion_3 INTEGER CHECK (criterion_3 BETWEEN 1 AND 4),
+    criterion_4 INTEGER CHECK (criterion_4 BETWEEN 1 AND 4),
+    overall_rating INTEGER CHECK (overall_rating BETWEEN 1 AND 4),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Rankings (
+    ranking_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES Users(user_id),
+    prompt_id UUID REFERENCES Prompts(prompt_id),
+    human_response_id UUID REFERENCES Responses(response_id),
+    ai_response_id UUID REFERENCES Responses(response_id),
+    better_response UUID REFERENCES Responses(response_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
